@@ -153,7 +153,7 @@ class DeepSiteScraper:
             print("\n❌ Keine Treffer gefunden")
 
 if __name__ == "__main__":
-    print("🕸️  Vollständiger Website-Scanner (Multi-Thread)")
+    print("🕸️ Deep Website Scraper")
     print("Drücke STRG+C zum Abbrechen\n")
     
     try:
