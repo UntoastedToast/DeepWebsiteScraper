@@ -83,7 +83,13 @@ The scraper includes comprehensive error handling:
 
 ## License 📄
 
-This project is open source and available under the MIT License.
+This project is open source and available under the [MIT License](LICENSE). This means you can:
+- ✔️ Use this software for commercial purposes
+- ✔️ Modify the source code
+- ✔️ Distribute the software
+- ✔️ Use and modify the software privately
+
+See the [LICENSE](LICENSE) file for the full license text.
 
 ## Contributing 🤝
 
