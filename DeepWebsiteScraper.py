@@ -28,7 +28,7 @@ class DeepSiteScraper:
             '.tar', '.gz', '.exe', '.svg', '.css', '.js', '.ico', '.webp'
         }
 
-        # Session mit Retries konfigurieren
+        # Configure session with retries
         self.session = requests.Session()
         retries = Retry(total=3, backoff_factor=0.1,
                         status_forcelist=[500, 502, 503, 504])
@@ -39,7 +39,7 @@ class DeepSiteScraper:
         signal.signal(signal.SIGINT, self._exit_gracefully)
 
     def _exit_gracefully(self, signum, frame):
-        print("\n🛑 Tiefenscan wird abgebrochen...")
+        print("\n🛑 Deep scan is being aborted...")
         self.running = False
         sys.exit(0)
 
@@ -57,12 +57,12 @@ class DeepSiteScraper:
             with self.session.get(url, stream=True, timeout=self.timeout) as response:
                 content_type = response.headers.get('Content-Type', '').lower()
                 if 'text/html' not in content_type:
-                    print(f"⏩ Überspringe Nicht-HTML: {url}")
+                    print(f"⏩ Skipping non-HTML: {url}")
                     return ''
                 response.raise_for_status()
                 return response.text
         except Exception as e:
-            print(f"⚠️ Fehler bei {url}: {str(e)}")
+            print(f"⚠️ Error at {url}: {str(e)}")
             return ''
 
     def _check_content(self, html: str) -> bool:
@@ -95,14 +95,14 @@ class DeepSiteScraper:
                         continue
                     self.visited.add(current_url)
 
-                print(f"🌐 Scanne Seite {len(self.visited)}/{self.max_pages}: {current_url}")
+                print(f"🌐 Scanning page {len(self.visited)}/{self.max_pages}: {current_url}")
 
                 html = self._fetch(current_url)
                 if html:
                     if self._check_content(html):
                         with self.lock:
                             self.found.add(current_url)
-                            print(f"🎯 Treffer auf: {current_url}")
+                            print(f"🎯 Match found on: {current_url}")
 
                     if len(self.visited) < self.max_pages:
                         new_links = self._extract_links(html, current_url)
@@ -116,12 +116,12 @@ class DeepSiteScraper:
             except Empty:
                 break
             except Exception as e:
-                print(f"⚠️ Unerwarteter Fehler: {str(e)}")
+                print(f"⚠️ Unexpected error: {str(e)}")
                 if not self.queue.empty():
                     self.queue.task_done()
 
     def crawl(self):
-        print(f"\n🔍 Starte Tiefenscan nach '{self.search_term}' auf {self.domain}")
+        print(f"\n🔍 Starting deep scan for '{self.search_term}' on {self.domain}")
         
         threads = []
         for _ in range(self.thread_count):
@@ -140,28 +140,28 @@ class DeepSiteScraper:
             for t in threads:
                 t.join()
 
-        print("\n📊 Endergebnis:")
-        print(f"Suchbegriff: '{self.search_term}'")
-        print(f"Gescannte Seiten: {len(self.visited)}")
-        print(f"Maximales Limit: {'Erreicht' if len(self.visited) >= self.max_pages else 'Nicht erreicht'}")
+        print("\n📊 Final Results:")
+        print(f"Search term: '{self.search_term}'")
+        print(f"Scanned pages: {len(self.visited)}")
+        print(f"Maximum limit: {'Reached' if len(self.visited) >= self.max_pages else 'Not reached'}")
         
         if self.found:
-            print("\n✅ Treffer auf folgenden Seiten:")
+            print("\n✅ Matches found on the following pages:")
             for result in self.found:
                 print(f"  → {result}")
         else:
-            print("\n❌ Keine Treffer gefunden")
+            print("\n❌ No matches found")
 
 if __name__ == "__main__":
     print("🕸️ Deep Website Scraper")
-    print("Drücke STRG+C zum Abbrechen\n")
+    print("Press CTRL+C to abort\n")
     
     try:
-        url = input("🌍 Start-URL: ").strip()
-        term = input("🔎 Suchbegriff: ").strip()
+        url = input("🌍 Start URL: ").strip()
+        term = input("🔎 Search term: ").strip()
         
         scraper = DeepSiteScraper(url, term)
         scraper.crawl()
             
     except Exception as e:
-        print(f"❌ Kritischer Fehler: {str(e)}")
+        print(f"❌ Critical error: {str(e)}")
