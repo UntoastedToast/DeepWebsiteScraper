@@ -15,12 +15,23 @@ def main():
     scraper.crawl()
 
     if scraper.found:
-        print("Matches found. Starting GUI...")
-        # Initialize PyQt5 application and show ResultWindow
-        app = QApplication(sys.argv)
-        resultWindow = ResultWindow(scraper.found, search_term)
-        resultWindow.show()
-        sys.exit(app.exec_())
+        print("Matches found.")
+        show_gui = input("Would you like to open the GUI to view results? (y/n): ").strip().lower()
+        
+        if show_gui == 'y':
+            print("Starting GUI...")
+            # Initialize PyQt5 application and show ResultWindow
+            app = QApplication(sys.argv)
+            resultWindow = ResultWindow(scraper.found, search_term)
+            resultWindow.show()
+            sys.exit(app.exec_())
+        else:
+            # Print results to console
+            print("\nResults:")
+            for url, matches in scraper.found.items():
+                print(f"\nURL: {url}")
+                for match in matches:
+                    print(f"- {match}")
     else:
         print("No matches found.")
 
